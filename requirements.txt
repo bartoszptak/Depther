@@ -1,0 +1,3 @@
+opencv-python>=4.2.0.32
+Click>=7.0
+numpy>=1.18.1
