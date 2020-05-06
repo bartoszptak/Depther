@@ -54,7 +54,7 @@ class Calibrator:
                               for p in sorted(glob.glob(f"{dir}/right/*.png"))])
         arr_right = arr_right[arr_right != None][0]
 
-        all_names = sorted(list(set(arr_left[:, 0]) & set(arr_left[:, 0])))
+        all_names = sorted(list(set(arr_left[:, 0]) & set(arr_right[:, 0])))
 
         def get_intersection(arr, all_names):
             return arr[np.isin(arr[:, 0], all_names)]
