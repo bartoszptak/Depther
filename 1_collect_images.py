@@ -17,8 +17,8 @@ def main(dir, flip, capl, capr):
     dir = Path(dir)
     dir.mkdir(parents=True, exist_ok=True)
 
-    Path(str(dir)+'/left').mkdir(parents=True, exist_ok=True)
-    Path(str(dir)+'/right').mkdir(parents=True, exist_ok=True)
+    Path(f'{str(dir)}/left').mkdir(parents=True, exist_ok=True)
+    Path(f'{str(dir)}/right').mkdir(parents=True, exist_ok=True)
 
     counter = 0
     while(True):
@@ -38,8 +38,8 @@ def main(dir, flip, capl, capr):
         if key & 0xFF == ord('q'):
             break
         elif key & 0xFF == 32:
-            cv2.imwrite("{}/left/{:06d}.png".format(str(dir), counter), frame_left)
-            cv2.imwrite("{}/right/{:06d}.png".format(str(dir), counter), frame_right)
+            cv2.imwrite(f"{str(dir)}/left/{counter:06d}.png", frame_left)
+            cv2.imwrite(f"{str(dir)}/right/{counter:06d}.png", frame_right)
 
             counter += 1
 
