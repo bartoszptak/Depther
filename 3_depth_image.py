@@ -28,15 +28,20 @@ class Depther:
             np.array(self.calibration['right']['projection']),
             self.size, cv2.CV_32FC1)
 
-        self.stereo = cv2.StereoBM_create()
+        self.stereo = cv2.StereoSGBM_create(
+            minDisparity = 1,
+            numDisparities = 128,
+            blockSize = 3,
+            P1 = 8*3**2,
+            P2 = 32*3**2,
+            disp12MaxDiff = 1,
+            preFilterCap = 63,
+            uniquenessRatio = 10,
+            speckleWindowSize = 100,
+            speckleRange = 32,
+            mode = 0
+        )
 
-        self.stereo.setMinDisparity(10)
-        self.stereo.setNumDisparities(128)
-        self.stereo.setBlockSize(21)
-        self.stereo.setROI1(tuple(np.array(self.calibration['left']['ROI'])))
-        self.stereo.setROI2(tuple(np.array(self.calibration['right']['ROI'])))
-        self.stereo.setSpeckleRange(128)
-        self.stereo.setSpeckleWindowSize(90)
 
     def make_image(self, left, right):
         remaped_left = cv2.remap(left, self.map_left[0], self.map_left[1], cv2.INTER_LINEAR)
@@ -49,6 +54,8 @@ class Depther:
         depth = depth*255. / (depth.max()-depth.min())
         depth = depth.astype(np.uint8)
 
+        depth = cv2.medianBlur(depth,9)        
+
         return remaped_left, remaped_right, depth
 
     def compute_images(self, imgl, imgr):
@@ -60,10 +67,10 @@ class Depther:
         remaped_left, remaped_right, depth = self.make_image(left, right)
 
         cv2.imshow('orginal', cv2.resize(
-            np.hstack([left, right]), None, fx=1, fy=1))
+            np.hstack([left, right]), None, fx=0.6, fy=0.6))
         cv2.imshow('remaped', cv2.resize(
-            np.hstack([remaped_left, remaped_right]), None, fx=1, fy=1))
-        cv2.imshow('depth', cv2.resize(depth, None, fx=1, fy=1))
+            np.hstack([remaped_left, remaped_right]), None, fx=0.6, fy=0.6))
+        cv2.imshow('depth', cv2.resize(depth, None, fx=0.6, fy=0.6))
 
         cv2.waitKey()
         cv2.destroyAllWindows()
