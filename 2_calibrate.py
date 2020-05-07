@@ -117,7 +117,7 @@ class Calibrator:
 @click.command()
 @click.option('--dir', default='imgs', help='Source directory', required=True)
 @click.option('--dest', default='params.json', help='Destination json file', required=True)
-@click.option('--size', default='1270x720', help='Image size', required=True)
+@click.option('--size', default='1280x720', help='Image size', required=True)
 @click.option('--cb-shape', default='7x6', help='Chessboard size (COLSxROWS)', required=True)
 @click.option('--cb-size', default=0.0417, help='Size of one chessboard square [m]', required=True)
 def main(dir, dest, size, cb_shape, cb_size):

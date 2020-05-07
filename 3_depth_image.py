@@ -101,7 +101,7 @@ class Depther:
 
 @click.command()
 @click.option('--source', default='params.json', help='Destination json file', required=True)
-@click.option('--size', default='1270x720', help='Image size', required=True)
+@click.option('--size', default='1280x720', help='Image size', required=True)
 @click.option('--imgl', default='samples/left/000000.png', help='Left camera image')
 @click.option('--imgr', default='samples/right/000000.png', help='Right camera image')
 @click.option('--capl', default=-1, help='Video capture index (left)')
