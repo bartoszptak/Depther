@@ -28,17 +28,15 @@ class Depther:
             np.array(self.calibration['right']['projection']),
             self.size, cv2.CV_32FC1)
 
-        self.stereo = cv2.StereoBM_create(
-
-        )
+        self.stereo = cv2.StereoBM_create()
 
         self.stereo.setMinDisparity(10)
         self.stereo.setNumDisparities(128)
         self.stereo.setBlockSize(21)
         self.stereo.setROI1(tuple(np.array(self.calibration['left']['ROI'])))
         self.stereo.setROI2(tuple(np.array(self.calibration['right']['ROI'])))
-        self.stereo.setSpeckleRange(32)
-        self.stereo.setSpeckleWindowSize(55)
+        self.stereo.setSpeckleRange(128)
+        self.stereo.setSpeckleWindowSize(90)
 
     def make_image(self, left, right):
         remaped_left = cv2.remap(left, self.map_left[0], self.map_left[1], cv2.INTER_LINEAR)
@@ -48,12 +46,16 @@ class Depther:
         grey_right = cv2.cvtColor(remaped_right, cv2.COLOR_BGR2GRAY)
         depth = self.stereo.compute(grey_left, grey_right)
 
+        depth = depth*255. / (depth.max()-depth.min())
+        depth = depth.astype(np.uint8)
+
         return remaped_left, remaped_right, depth
 
     def compute_images(self, imgl, imgr):
         left = cv2.imread(imgl)
+        left = cv2.resize(left, self.size)
         right = cv2.imread(imgr)
-
+        right = cv2.resize(right, self.size)
 
         remaped_left, remaped_right, depth = self.make_image(left, right)
 
@@ -61,7 +63,7 @@ class Depther:
             np.hstack([left, right]), None, fx=0.4, fy=0.4))
         cv2.imshow('remaped', cv2.resize(
             np.hstack([remaped_left, remaped_right]), None, fx=0.4, fy=0.4))
-        cv2.imshow('depth', cv2.resize(depth/2048, None, fx=0.4, fy=0.4))
+        cv2.imshow('depth', cv2.resize(depth, None, fx=0.4, fy=0.4))
 
         cv2.waitKey()
         cv2.destroyAllWindows()
@@ -99,9 +101,9 @@ class Depther:
 
 @click.command()
 @click.option('--source', default='params.json', help='Destination json file', required=True)
-@click.option('--size', default='1920x1080', help='Image size', required=True)
-@click.option('--imgl', default='samples/left/left.png', help='Left camera image')
-@click.option('--imgr', default='samples/right/right.png', help='Right camera image')
+@click.option('--size', default='1270x720', help='Image size', required=True)
+@click.option('--imgl', default='samples/left/000000.png', help='Left camera image')
+@click.option('--imgr', default='samples/right/000000.png', help='Right camera image')
 @click.option('--capl', default=-1, help='Video capture index (left)')
 @click.option('--capr', default=-1, help='Video capture index (right)')
 def main(source, size, imgl, imgr, capl, capr):

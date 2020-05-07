@@ -40,6 +40,7 @@ class Calibrator:
 
         def find_corners(p):
             img = cv2.imread(p, 0)
+            img = cv2.resize(img, self.imageSize)
             ret, corners = cv2.findChessboardCorners(
                 img, self.cb_shape, cv2.CALIB_CB_FAST_CHECK)
             if ret and img.shape[::-1] == self.imageSize:
@@ -72,17 +73,25 @@ class Calibrator:
         matrix_right, distortion_right = cv2.calibrateCamera(
             self.arrays[0][:, 1], self.arrays[1][:, 2], self.imageSize, None, None)[1:3]
 
+        flags = 0
+        flags |= cv2.CALIB_FIX_ASPECT_RATIO
+        flags |= cv2.CALIB_ZERO_TANGENT_DIST
+        flags |= cv2.CALIB_SAME_FOCAL_LENGTH
+        flags |= cv2.CALIB_RATIONAL_MODEL
+        flags |= cv2.CALIB_FIX_K3
+        flags |= cv2.CALIB_FIX_K4
+
         rot_matrix, trans_vector = cv2.stereoCalibrate(
             self.arrays[0][:, 1], self.arrays[0][:, 2], self.arrays[1][:, 2],
             matrix_left, distortion_left,
             matrix_right, distortion_right,
-            self.imageSize, flags=cv2.CALIB_FIX_INTRINSIC, criteria=self.term)[5:7]
+            self.imageSize, flags=flags, criteria=self.term)[5:7]
 
         rect_left, rect_right, proj_left, proj_right, dispartity, ROI_left, ROI_right = cv2.stereoRectify(
             matrix_left, distortion_left,
             matrix_right, distortion_right,
             self.imageSize, rot_matrix, trans_vector,
-            flags=cv2.CALIB_ZERO_DISPARITY, alpha=self.alpha)
+            flags=cv2.CALIB_ZERO_DISPARITY, alpha=0)
 
         self.calibration = {
             'general': {
@@ -116,7 +125,7 @@ class Calibrator:
 @click.command()
 @click.option('--dir', default='imgs', help='Source directory', required=True)
 @click.option('--dest', default='params.json', help='Destination json file', required=True)
-@click.option('--size', default='1920x1080', help='Image size', required=True)
+@click.option('--size', default='1270x720', help='Image size', required=True)
 @click.option('--cb-shape', default='7x6', help='Chessboard size (COLSxROWS)', required=True)
 @click.option('--cb-size', default=0.0417, help='Size of one chessboard square [m]', required=True)
 def main(dir, dest, size, cb_shape, cb_size):
