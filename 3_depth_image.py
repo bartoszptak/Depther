@@ -60,10 +60,10 @@ class Depther:
         remaped_left, remaped_right, depth = self.make_image(left, right)
 
         cv2.imshow('orginal', cv2.resize(
-            np.hstack([left, right]), None, fx=0.4, fy=0.4))
+            np.hstack([left, right]), None, fx=1, fy=1))
         cv2.imshow('remaped', cv2.resize(
-            np.hstack([remaped_left, remaped_right]), None, fx=0.4, fy=0.4))
-        cv2.imshow('depth', cv2.resize(depth, None, fx=0.4, fy=0.4))
+            np.hstack([remaped_left, remaped_right]), None, fx=1, fy=1))
+        cv2.imshow('depth', cv2.resize(depth, None, fx=1, fy=1))
 
         cv2.waitKey()
         cv2.destroyAllWindows()

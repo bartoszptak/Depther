@@ -73,25 +73,17 @@ class Calibrator:
         matrix_right, distortion_right = cv2.calibrateCamera(
             self.arrays[0][:, 1], self.arrays[1][:, 2], self.imageSize, None, None)[1:3]
 
-        flags = 0
-        flags |= cv2.CALIB_FIX_ASPECT_RATIO
-        flags |= cv2.CALIB_ZERO_TANGENT_DIST
-        flags |= cv2.CALIB_SAME_FOCAL_LENGTH
-        flags |= cv2.CALIB_RATIONAL_MODEL
-        flags |= cv2.CALIB_FIX_K3
-        flags |= cv2.CALIB_FIX_K4
-
         rot_matrix, trans_vector = cv2.stereoCalibrate(
             self.arrays[0][:, 1], self.arrays[0][:, 2], self.arrays[1][:, 2],
             matrix_left, distortion_left,
             matrix_right, distortion_right,
-            self.imageSize, flags=flags, criteria=self.term)[5:7]
+            self.imageSize, flags=cv2.CALIB_FIX_INTRINSIC, criteria=self.term)[5:7]
 
         rect_left, rect_right, proj_left, proj_right, dispartity, ROI_left, ROI_right = cv2.stereoRectify(
             matrix_left, distortion_left,
             matrix_right, distortion_right,
             self.imageSize, rot_matrix, trans_vector,
-            flags=cv2.CALIB_ZERO_DISPARITY, alpha=0)
+            flags=cv2.CALIB_ZERO_DISPARITY, alpha=self.alpha)
 
         self.calibration = {
             'general': {
